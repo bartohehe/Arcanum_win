@@ -12,12 +12,20 @@ pub fn open_and_migrate(app_data_dir: &std::path::Path) -> Result<Connection> {
     let version: i64 = conn.query_row("PRAGMA user_version", [], |r| r.get(0))?;
 
     if version < 1 {
-        conn.execute_batch(include_str!("../migrations/001_initial.sql"))?;
-        conn.execute_batch("PRAGMA user_version = 1")?;
+        let sql = format!(
+            "BEGIN;\n{}\nCOMMIT;",
+            include_str!("../migrations/001_initial.sql")
+        );
+        conn.execute_batch(&sql)?;
+        conn.execute_batch("PRAGMA user_version = 1;")?;
     }
     if version < 2 {
-        conn.execute_batch(include_str!("../migrations/002_skill_nodes.sql"))?;
-        conn.execute_batch("PRAGMA user_version = 2")?;
+        let sql = format!(
+            "BEGIN;\n{}\nCOMMIT;",
+            include_str!("../migrations/002_skill_nodes.sql")
+        );
+        conn.execute_batch(&sql)?;
+        conn.execute_batch("PRAGMA user_version = 2;")?;
     }
 
     Ok(conn)
@@ -34,8 +42,8 @@ pub fn insert_activity(
         rusqlite::params![message, xp, source],
     )?;
     conn.execute(
-        "DELETE FROM activity_log WHERE id IN (
-           SELECT id FROM activity_log ORDER BY id DESC LIMIT -1 OFFSET 200
+        "DELETE FROM activity_log WHERE id NOT IN (
+           SELECT id FROM activity_log ORDER BY id DESC LIMIT 200
          )",
         [],
     )?;
