@@ -30,6 +30,11 @@ pub fn run() {
             commands::quests::create_quest,
             commands::quests::toggle_quest,
             commands::quests::delete_quest,
+            commands::habits::get_habits,
+            commands::habits::create_habit,
+            commands::habits::toggle_habit,
+            commands::habits::delete_habit,
+            commands::habits::get_habit_log,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
