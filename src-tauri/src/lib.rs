@@ -1,6 +1,23 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+mod db;
+
+use db::DbState;
+use tauri::Manager;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_notification::init())
+        .setup(|app| {
+            let app_data_dir = app.path().app_data_dir().expect("no app data dir");
+            std::fs::create_dir_all(&app_data_dir)?;
+            let conn = db::open_and_migrate(&app_data_dir)
+                .expect("failed to open/migrate database");
+            app.manage(DbState(std::sync::Mutex::new(conn)));
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
