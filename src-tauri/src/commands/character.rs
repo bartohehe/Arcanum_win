@@ -1,5 +1,5 @@
 use crate::db::DbState;
-use crate::models::{Category, CategoryRow, Character};
+use crate::models::{CategoryRow, Character};
 use crate::xp::build_character;
 use tauri::State;
 
