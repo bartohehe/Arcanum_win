@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod commands;
 mod db;
 mod models;
 mod xp;
@@ -19,7 +20,12 @@ pub fn run() {
             app.manage(DbState(std::sync::Mutex::new(conn)));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![
+            commands::character::get_character,
+            commands::character::update_name,
+            commands::character::reset_data,
+            commands::character::export_json,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
