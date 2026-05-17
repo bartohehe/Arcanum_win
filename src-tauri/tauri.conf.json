@@ -24,9 +24,7 @@
       "csp": null
     }
   },
-  "plugins": {
-    "notification": {}
-  },
+  "plugins": {},
   "bundle": {
     "active": true,
     "targets": "all",
