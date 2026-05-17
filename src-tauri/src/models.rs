@@ -103,3 +103,46 @@ pub struct LogLine {
     pub xp: Option<i64>,
     pub source: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct NegativeHabit {
+    pub id: i64,
+    pub name: String,
+    pub cat_id: String,
+    pub xp_block: i64,
+    pub penalty_xp: i64,
+    pub created_at: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct NegativeHabitWithStatus {
+    pub id: i64,
+    pub name: String,
+    pub cat_id: String,
+    pub xp_block: i64,
+    pub penalty_xp: i64,
+    pub created_at: String,
+    pub logged_today: bool,
+    pub bad_streak: i64,
+    pub penalty_active: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateNegativeHabitPayload {
+    pub name: String,
+    pub cat_id: String,
+    pub xp_block: i64,
+    pub penalty_xp: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ToggleNegativeHabitResult {
+    pub habit: NegativeHabitWithStatus,
+    pub penalty_applied: bool,
+    pub bonus_blocked: bool,
+    pub bonus_unblocked: bool,
+    pub penalty_reversed: bool,
+    pub xp_delta: i64,
+    pub category_after: Category,
+    pub character_after: Character,
+}

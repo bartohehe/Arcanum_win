@@ -27,6 +27,14 @@ pub fn open_and_migrate(app_data_dir: &std::path::Path) -> Result<Connection> {
         conn.execute_batch(&sql)?;
         conn.execute_batch("PRAGMA user_version = 2;")?;
     }
+    if version < 3 {
+        let sql = format!(
+            "BEGIN;\n{}\nCOMMIT;",
+            include_str!("../migrations/003_negative_habits.sql")
+        );
+        conn.execute_batch(&sql)?;
+        conn.execute_batch("PRAGMA user_version = 3;")?;
+    }
 
     Ok(conn)
 }
