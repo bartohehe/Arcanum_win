@@ -3,6 +3,7 @@
 mod commands;
 mod db;
 mod models;
+mod notifications;
 mod xp;
 
 use db::DbState;
@@ -25,6 +26,10 @@ pub fn run() {
             commands::character::update_name,
             commands::character::reset_data,
             commands::character::export_json,
+            commands::quests::get_quests,
+            commands::quests::create_quest,
+            commands::quests::toggle_quest,
+            commands::quests::delete_quest,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
