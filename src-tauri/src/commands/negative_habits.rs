@@ -324,8 +324,6 @@ pub fn get_blocked_cats(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn bad_streak_empty_returns_zero() {
         // Pure logic test — streak of 0 dates = 0
