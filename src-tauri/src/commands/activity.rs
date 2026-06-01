@@ -5,6 +5,17 @@ use tauri::State;
 #[tauri::command]
 pub fn get_activity_log(state: State<DbState>, limit: i64) -> Result<Vec<LogLine>, String> {
     let conn = state.0.lock().map_err(|e| e.to_string())?;
+
+    // Daily reset: drop any entries that aren't from today (local time).
+    // `time` is stored as UTC via datetime('now'); the 'localtime' modifier
+    // converts it so the day boundary matches the user's clock.
+    conn.execute(
+        "DELETE FROM activity_log
+         WHERE date(time, 'localtime') != date('now', 'localtime')",
+        [],
+    )
+    .map_err(|e| e.to_string())?;
+
     let mut stmt = conn
         .prepare(
             "SELECT id, time, message, xp, source FROM activity_log
