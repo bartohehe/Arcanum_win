@@ -4,6 +4,7 @@ import { TopBar } from './components/TopBar';
 import { CharacterPanel } from './components/CharacterPanel';
 import { CategoryGrid } from './components/CategoryGrid';
 import { HabitTracker } from './components/HabitTracker';
+import { NegativeHabitTracker } from './components/NegativeHabitTracker';
 import { QuestPanel } from './components/QuestPanel';
 import { ActivityLog } from './components/ActivityLog';
 import { SettingsModal } from './components/SettingsModal';
@@ -22,7 +23,11 @@ export default function App() {
     <div className="app">
       <TopBar onOpenSettings={() => setSettingsOpen(true)} />
       <div className="grid">
-        <div className="col-left"><CharacterPanel /></div>
+        <div className="col-left">
+          <CharacterPanel />
+          <div style={{ height: 22 }} />
+          <ActivityLog />
+        </div>
         <div className="col-mid">
           <CategoryGrid />
           <div style={{ height: 22 }} />
@@ -31,7 +36,7 @@ export default function App() {
         <div className="col-right">
           <QuestPanel />
           <div style={{ height: 22 }} />
-          <ActivityLog />
+          <NegativeHabitTracker />
         </div>
       </div>
       <ToastContainer />
