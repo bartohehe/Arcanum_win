@@ -104,6 +104,7 @@ pub struct LogLine {
     pub source: Option<String>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct NegativeHabit {
     pub id: i64,

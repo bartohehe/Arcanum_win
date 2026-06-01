@@ -10,6 +10,9 @@ import type {
   HabitLogDay,
   LogLine,
   QuestBucket,
+  NegativeHabitWithStatus,
+  CreateNegativeHabitPayload,
+  ToggleNegativeHabitResult,
 } from '../types';
 
 export const getCharacter = () =>
@@ -53,3 +56,23 @@ export const resetData = () =>
 
 export const exportJson = () =>
   invoke<string>('export_json');
+
+// ── Negative Habits (Shadow Habits) ─────────────────────────────────────────
+
+export const getNegativeHabits = () =>
+  invoke<NegativeHabitWithStatus[]>('get_negative_habits');
+
+export const toggleNegativeHabit = (habitId: number, date?: string) =>
+  invoke<ToggleNegativeHabitResult>('toggle_negative_habit', {
+    habitId,
+    date: date ?? null,
+  });
+
+export const createNegativeHabit = (payload: CreateNegativeHabitPayload) =>
+  invoke<NegativeHabitWithStatus>('create_negative_habit', { payload });
+
+export const deleteNegativeHabit = (habitId: number) =>
+  invoke<void>('delete_negative_habit', { habitId });
+
+export const getBlockedCats = (date?: string) =>
+  invoke<string[]>('get_blocked_cats', { date: date ?? null });

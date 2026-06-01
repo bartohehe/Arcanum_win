@@ -127,6 +127,22 @@ pub fn toggle_habit(
         )
         .map_err(|e| e.to_string())?;
 
+    // Check shadow block — if the category has an active negative-habit log today,
+    // we still record the habit completion (for streak) but grant zero XP.
+    let shadow_blocked: bool = if !already {
+        conn.query_row(
+            "SELECT COUNT(*) FROM negative_habits nh
+             JOIN negative_habit_logs nhl ON nhl.habit_id = nh.id
+             WHERE nh.cat_id = ?1 AND nhl.logged_date = ?2",
+            rusqlite::params![cat_id, today],
+            |r| r.get::<_, i64>(0),
+        )
+        .map_err(|e| e.to_string())?
+            > 0
+    } else {
+        false
+    };
+
     let xp_delta = if already {
         conn.execute(
             "DELETE FROM habit_logs WHERE habit_id = ?1 AND logged_date = ?2",
@@ -140,21 +156,24 @@ pub fn toggle_habit(
             rusqlite::params![habit_id, today],
         )
         .map_err(|e| e.to_string())?;
-        xp_per_check
+        if shadow_blocked { 0 } else { xp_per_check }
     };
 
-    conn.execute(
-        "UPDATE categories SET xp = MAX(0, xp + ?1) WHERE id = ?2",
-        rusqlite::params![xp_delta, cat_id],
-    )
-    .map_err(|e| e.to_string())?;
+    // Only update XP when there is a net change
+    if xp_delta != 0 {
+        conn.execute(
+            "UPDATE categories SET xp = MAX(0, xp + ?1) WHERE id = ?2",
+            rusqlite::params![xp_delta, cat_id],
+        )
+        .map_err(|e| e.to_string())?;
 
-    conn.execute(
-        "UPDATE character SET total_xp = MAX(0, total_xp + ?1),
-           updated_at = datetime('now') WHERE id = 1",
-        rusqlite::params![xp_delta],
-    )
-    .map_err(|e| e.to_string())?;
+        conn.execute(
+            "UPDATE character SET total_xp = MAX(0, total_xp + ?1),
+               updated_at = datetime('now') WHERE id = 1",
+            rusqlite::params![xp_delta],
+        )
+        .map_err(|e| e.to_string())?;
+    }
 
     let cat_row: CategoryRow = conn
         .query_row(
@@ -182,12 +201,14 @@ pub fn toggle_habit(
 
     let character_after = sync_character_level(&conn).map_err(|e| e.to_string())?;
 
-    let msg = if !already {
-        format!("Nawyk '{}' zaliczony (+{} XP)", habit_name, xp_per_check)
-    } else {
+    let msg = if already {
         format!("Nawyk '{}' cofnięty", habit_name)
+    } else if shadow_blocked {
+        format!("✗ Zablokowane: {} (Pokusa aktywna)", habit_name)
+    } else {
+        format!("✓ {} (+{} XP)", habit_name, xp_per_check)
     };
-    let xp_logged = if !already { Some(xp_delta) } else { None };
+    let xp_logged = if xp_delta != 0 { Some(xp_delta) } else { None };
     insert_activity(&conn, &msg, xp_logged, "habit").map_err(|e| e.to_string())?;
 
     let habit = load_habit(&conn, habit_id, &today).map_err(|e| e.to_string())?;

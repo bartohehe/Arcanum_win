@@ -9,12 +9,25 @@ export function ToastContainer() {
       {toasts.map((t) => (
         <div
           key={t.id}
-          className={'toast' + (t.type === 'lvlup' ? ' lvlup' : '')}
+          className={
+            'toast' +
+            (t.type === 'lvlup' ? ' lvlup' : '') +
+            (t.type === 'penalty' ? ' penalty' : '') +
+            (t.type === 'blocked' ? ' blocked' : '')
+          }
           onClick={() => removeToast(t.id)}
           style={{ cursor: 'pointer' }}
         >
-          <div className="tlabel">{t.type === 'lvlup' ? 'LEVEL UP!' : 'XP'}</div>
-          <div>{t.type === 'xp' && t.xp ? `+${t.xp} XP — ` : ''}{t.message}</div>
+          <div className="tlabel">
+            {t.type === 'lvlup' && 'LEVEL UP!'}
+            {t.type === 'xp' && 'XP'}
+            {t.type === 'blocked' && '⚠ POKUSA'}
+            {t.type === 'penalty' && '💀 PASSA'}
+          </div>
+          <div>
+            {t.type === 'xp' && t.xp ? `+${t.xp} XP — ` : ''}
+            {t.message}
+          </div>
         </div>
       ))}
     </div>

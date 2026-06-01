@@ -159,24 +159,10 @@ body {
 .brand { display: flex; align-items: center; gap: 14px; }
 .brand-mark {
   width: 52px; height: 52px;
-  display: grid; place-items: center;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-2));
-  color: #fdf3df;
-  box-shadow: var(--shadow-md), inset 0 0 0 2px rgba(255,255,255,0.15);
-  font-family: var(--font-cjk);
-  font-weight: 700;
-  font-size: 30px;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  position: relative;
-}
-.brand-mark::after {
-  content: "";
-  position: absolute; inset: 4px;
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 3px;
-  pointer-events: none;
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+  display: block;
 }
 .brand-title {
   font-family: var(--font-display);
@@ -696,7 +682,40 @@ body {
 .toast .tlabel { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 1px; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
 .toast.lvlup { border-color: var(--c-work); border-left-color: var(--c-work); }
 .toast.lvlup .tlabel { color: var(--c-work); }
+.toast.blocked { border-color: var(--c-health); border-left-color: var(--c-health); }
+.toast.blocked .tlabel { color: var(--c-health); }
+.toast.penalty { border-color: var(--c-health); border-left-color: var(--c-health); animation: toastIn .3s cubic-bezier(.2,.8,.2,1), penaltyPulse 0.6s ease-out; }
+.toast.penalty .tlabel { color: var(--c-health); }
 @keyframes toastIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes penaltyPulse { 0%,100% { box-shadow: var(--shadow-lg); } 50% { box-shadow: 0 0 24px color-mix(in oklch, var(--c-health) 50%, transparent); } }
+
+/* ====== Negative Habits (Shadow Habits) ====== */
+.neg-habit {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius);
+  border: 1px solid var(--line); background: color-mix(in oklch, var(--c-health) 6%, var(--bg-2));
+  cursor: pointer; transition: border-color .18s, background .18s;
+  user-select: none;
+}
+.neg-habit:hover { border-color: var(--c-health); }
+.neg-habit.active { border-color: var(--c-health); background: color-mix(in oklch, var(--c-health) 12%, var(--bg-2)); }
+.neg-habit .tick {
+  width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
+  border: 2px solid var(--ink-3); display: flex; align-items: center; justify-content: center;
+  color: transparent; transition: border-color .15s, background .15s, color .15s;
+}
+.neg-habit .tick svg { width: 12px; height: 12px; }
+.neg-habit.active .tick { border-color: var(--c-health); background: var(--c-health); color: #fff; }
+.neg-habit .neg-name { flex: 1; font-size: 13px; color: var(--ink); }
+.neg-habit.active .neg-name { color: var(--c-health); }
+.neg-streak { font-size: 11px; color: var(--c-health); font-family: var(--font-mono); padding: 1px 5px; border-radius: 4px; border: 1px solid color-mix(in oklch, var(--c-health) 30%, transparent); }
+.neg-streak.pulse { animation: streakPulse 1.2s ease-in-out infinite; }
+@keyframes streakPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+.neg-block-info { font-size: 10px; color: var(--ink-3); white-space: nowrap; }
+
+/* 7-day grid for negative habits — inverted colours */
+.cell.neg-on { background: var(--c-health) !important; border-color: var(--c-health) !important; }
+.cell.neg-off { background: var(--c-finance) !important; border-color: var(--c-finance) !important; }
 
 /* ====== Modal ====== */
 .modal-backdrop {
