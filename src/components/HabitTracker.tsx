@@ -182,7 +182,7 @@ function NegativeHabitSection({ days, today }: {
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') handleAdd(); }}
           />
-          <button className="btn" style={{ borderColor: 'var(--c-health)', color: 'var(--c-health)' }} onClick={handleAdd}>
+          <button className="btn danger" onClick={handleAdd}>
             + Dodaj
           </button>
         </div>
