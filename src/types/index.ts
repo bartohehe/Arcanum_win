@@ -89,7 +89,42 @@ export interface LogLine {
 
 export interface Toast {
   id: string;
-  type: 'xp' | 'lvlup';
+  type: 'xp' | 'lvlup' | 'blocked' | 'penalty';
   message: string;
   xp?: number;
+}
+
+// ── Negative Habits (Shadow Habits) ─────────────────────────────────────────
+
+export interface NegativeHabit {
+  id: number;
+  name: string;
+  cat_id: ElementId;
+  xp_block: number;
+  penalty_xp: number;
+  created_at: string;
+}
+
+export interface NegativeHabitWithStatus extends NegativeHabit {
+  logged_today: boolean;
+  bad_streak: number;
+  penalty_active: boolean; // bad_streak >= 3
+}
+
+export interface CreateNegativeHabitPayload {
+  name: string;
+  cat_id: ElementId;
+  xp_block: number;   // default 15
+  penalty_xp: number; // default 30
+}
+
+export interface ToggleNegativeHabitResult {
+  habit: NegativeHabitWithStatus;
+  penalty_applied: boolean;
+  bonus_blocked: boolean;
+  bonus_unblocked: boolean;
+  penalty_reversed: boolean;
+  xp_delta: number;
+  category_after: Category;
+  character_after: Character;
 }

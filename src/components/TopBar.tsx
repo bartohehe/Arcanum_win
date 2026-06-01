@@ -1,5 +1,6 @@
 import { CATEGORIES } from '../data';
 import { useHabits } from '../hooks/useHabits';
+import logoUrl from '../assets/logo.svg';
 
 interface Props {
   onOpenSettings: () => void;
@@ -17,7 +18,7 @@ export function TopBar({ onOpenSettings }: Props) {
   return (
     <div className="topbar">
       <div className="brand">
-        <div className="brand-mark">気</div>
+        <img src={logoUrl} alt="Arcanum" className="brand-mark" />
         <div>
           <div className="brand-title">Arcanum</div>
           <div className="brand-sub">Sześć żywiołów codzienności</div>

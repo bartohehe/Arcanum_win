@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { CATEGORIES, todayISO } from '../data';
 import { useHabits, useHabitLog, useToggleHabit, useCreateHabit, useDeleteHabit } from '../hooks/useHabits';
+import { useBlockedCats } from '../hooks/useNegativeHabits';
 import type { ElementId } from '../types';
 
 function getLast7Days(): string[] {
@@ -19,9 +20,11 @@ function dayLabel(iso: string) {
   return ['N', 'P', 'W', 'Ś', 'C', 'P', 'S'][d.getDay()];
 }
 
+// ── Main HabitTracker ────────────────────────────────────────────────────────
 export function HabitTracker() {
   const { data: habits = [] } = useHabits();
   const { data: habitLogDays = [] } = useHabitLog(7);
+  const { data: blockedCatsArr = [] } = useBlockedCats();
   const toggleHabit = useToggleHabit();
   const createHabit = useCreateHabit();
   const deleteHabit = useDeleteHabit();
@@ -33,6 +36,8 @@ export function HabitTracker() {
   const [newName, setNewName] = useState('');
   const [newCat, setNewCat] = useState<ElementId>('habit');
   const [newXp, setNewXp] = useState(15);
+
+  const blockedCats = useMemo(() => new Set(blockedCatsArr), [blockedCatsArr]);
 
   // Build a map from date -> Set<habitId> for fast lookup
   const logMap = useMemo(() => {
@@ -62,6 +67,7 @@ export function HabitTracker() {
           {habits.map((h) => {
             const cat = CATEGORIES.find((c) => c.id === h.cat_id)!;
             const done = h.logged_today;
+            const shadowBlocked = blockedCats.has(h.cat_id);
             return (
               <div
                 key={h.id}
@@ -78,7 +84,16 @@ export function HabitTracker() {
                 <div className="habit-meta">
                   <span className="habit-cat-dot" style={{ background: cat?.color ?? 'var(--gold)' }} />
                   <span className="habit-streak" title="Streak">🔥{h.streak}</span>
-                  <span className="habit-xp" style={{ color: cat?.color ?? 'var(--gold)' }}>+{h.xp_per_check} XP</span>
+                  <span
+                    className="habit-xp"
+                    style={{
+                      color: shadowBlocked ? 'var(--ink-3)' : (cat?.color ?? 'var(--gold)'),
+                      textDecoration: shadowBlocked ? 'line-through' : 'none',
+                    }}
+                    title={shadowBlocked ? 'Bonus zablokowany przez Pokusę' : undefined}
+                  >
+                    +{h.xp_per_check} XP{shadowBlocked ? ' 🚫' : ''}
+                  </span>
                   <button
                     className="btn danger"
                     style={{ padding: '2px 6px', fontSize: 9 }}

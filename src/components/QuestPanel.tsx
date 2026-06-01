@@ -17,10 +17,24 @@ export function QuestPanel() {
   const [newName, setNewName] = useState('');
   const [newCat, setNewCat] = useState<ElementId>('work');
 
-  const { data: quests = [] } = useQuests(tab);
+  const { data: dailyQuests = [] } = useQuests('daily');
+  const { data: weeklyQuests = [] } = useQuests('weekly');
+  const { data: epicQuests = [] } = useQuests('epic');
   const toggleQuest = useToggleQuest();
   const createQuest = useCreateQuest();
   const deleteQuest = useDeleteQuest(tab);
+
+  const questsByBucket: Record<QuestBucket, typeof dailyQuests> = {
+    daily: dailyQuests,
+    weekly: weeklyQuests,
+    epic: epicQuests,
+  };
+  const quests = questsByBucket[tab];
+  const pendingByBucket: Record<QuestBucket, number> = {
+    daily: dailyQuests.filter((q) => !q.done).length,
+    weekly: weeklyQuests.filter((q) => !q.done).length,
+    epic: epicQuests.filter((q) => !q.done).length,
+  };
 
   function handleAdd() {
     if (!newName.trim()) return;
@@ -35,7 +49,6 @@ export function QuestPanel() {
   }
 
   const bucketLabel = tab === 'daily' ? 'dzienne' : tab === 'weekly' ? 'tygodniowe' : 'epickie';
-  const pending = quests.filter((q) => !q.done).length;
 
   return (
     <div className="panel">
@@ -51,7 +64,7 @@ export function QuestPanel() {
               className={'quest-tab' + (tab === t.id ? ' active' : '')}
               onClick={() => setTab(t.id)}
             >
-              {t.label} · {t.id === tab ? pending : '?'}
+              {t.label} · {pendingByBucket[t.id]}
             </div>
           ))}
         </div>

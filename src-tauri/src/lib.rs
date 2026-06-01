@@ -36,6 +36,11 @@ pub fn run() {
             commands::habits::delete_habit,
             commands::habits::get_habit_log,
             commands::activity::get_activity_log,
+            commands::negative_habits::get_negative_habits,
+            commands::negative_habits::toggle_negative_habit,
+            commands::negative_habits::create_negative_habit,
+            commands::negative_habits::delete_negative_habit,
+            commands::negative_habits::get_blocked_cats,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
