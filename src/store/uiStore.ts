@@ -25,10 +25,16 @@ export const useUiStore = create<UiState>((set) => ({
 
   setActiveCategory: (id) => set({ activeCategory: id }),
   setSettingsOpen: (open) => set({ settingsOpen: open }),
-  addToast: (toast) =>
+  addToast: (toast) => {
+    const id = crypto.randomUUID();
     set((s) => ({
-      toasts: [...s.toasts, { ...toast, id: crypto.randomUUID() }],
-    })),
+      toasts: [...s.toasts, { ...toast, id }],
+    }));
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) }));
+    }, 5000);
+  },
   removeToast: (id) =>
     set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
   setActiveQuestBucket: (bucket) => set({ activeQuestBucket: bucket }),
