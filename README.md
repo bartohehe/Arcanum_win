@@ -50,9 +50,9 @@ Wszystkie dane żyją lokalnie w bazie **SQLite** na Twoim komputerze. Bez chmur
 - 🔁 **Nawyki** — codzienne odhaczanie z licznikiem serii (streak) i historią ostatnich 7 dni.
 - 🌑 **Pokusy (Shadow Habits)** — negatywne nawyki z odwróconą logiką (patrz niżej).
 - 📈 **System poziomów** — osobne krzywe XP dla postaci i dla każdego żywiołu.
-- 📜 **Dziennik czynów** — kronika ostatnich aktywności (auto-przycinana do 200 wpisów).
+- 📜 **Dziennik czynów** — kronika aktywności z dnia, czyszczona automatycznie po każdej dobie.
 - 🎨 **5 motywów** — Żywioły, Pergamin, Świt, Łąka, Północ.
-- 🔔 **Powiadomienia** — natywny toast przy awansie na nowy poziom.
+- 🔔 **Powiadomienia** — natywny toast przy awansie na nowy poziom; toasty XP znikają po 5 s.
 - 💾 **Eksport danych** — zrzut całego stanu do JSON.
 
 ## ✦ Mechanika Pokus (Shadow Habits)
@@ -150,7 +150,8 @@ npx @tauri-apps/cli icon src-tauri/icons/512x512.png
 - **Stan = SQLite po stronie Rusta** — frontend nigdy nie dotyka bazy bezpośrednio, tylko przez komendy Tauri.
 - **Migracje wersjonowane** przez `PRAGMA user_version` — każda owinięta w transakcję `BEGIN…COMMIT`.
 - **TanStack Query** cache'uje wyniki komend; mutacje unieważniają odpowiednie klucze.
-- **Dziennik czynów** stosuje przycinanie FIFO — przechowywane jest maks. 200 ostatnich wpisów.
+- **Dziennik czynów** czyści się dobowo (przy pierwszym odczycie nowego dnia, wg czasu lokalnego),
+  a dodatkowo stosuje przycinanie FIFO — maks. 200 wpisów jako zabezpieczenie.
 
 ---
 
